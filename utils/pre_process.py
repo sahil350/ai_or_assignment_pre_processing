@@ -4,9 +4,10 @@ This module performs the preprocessing of raw tweets preparing
 them for sentimental analysis with with CNN + Embedding model
 
 """
+import re
 from constants import VectorInt
 
-def clean_text(tweet:str) -> str:
+def clean_text(tweet: str) -> str:
     """
 
     Args:
@@ -18,17 +19,20 @@ def clean_text(tweet:str) -> str:
             removes the url and @ token
 
    """
+    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet, flags=re.MULTILINE)
+    cleaned_tweet = ' '.join(re.sub(r"(@[A-Za-z0-9_]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", \
+        text).split())
 
-    pass
+    return cleaned_tweet
 
 
-def tokenize_text(cleaned_tweet:str) -> VectorInt:
+def tokenize_text(cleaned_tweet: str) -> VectorInt:
 
     """
 
     Args:
         cleaned_tweet
-            cleaned tweet not containing the url and the @ token
+            cleaned tweet not containing the url and the @ twitter handler
 
     Returns:
        An array of tokens
