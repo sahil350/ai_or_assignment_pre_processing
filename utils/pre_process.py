@@ -7,6 +7,9 @@ them for sentimental analysis with with CNN + Embedding model
 import re
 from constants import VectorInt
 
+import stopwords
+from nltk_tokenize import TweetTokenizer
+
 def clean_text(tweet: str) -> str:
     """
 
@@ -16,14 +19,15 @@ def clean_text(tweet: str) -> str:
 
     Returns:
         cleaned_tweet
-            removes the url and @ token
+            removes the RT, handle and url
 
    """
-    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet, flags=re.MULTILINE)
-    cleaned_tweet = ' '.join(re.sub(r"(@[A-Za-z0-9_]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", \
-        text).split())
+    # text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet, flags=re.MULTILINE)
+    # cleaned_tweet = ' '.join(re.sub(r"(@[A-Za-z0-9_]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", \
+    #     text).split())
 
-    return cleaned_tweet
+    tweet = re.sub(re.compile(r'([RT])|(@[\w]+:?)|(\w+:\/\/\S+)'), ' ', tweet)
+    return ' '.join(tweet.split()).strip()
 
 
 def tokenize_text(cleaned_tweet: str) -> VectorInt:
@@ -39,7 +43,9 @@ def tokenize_text(cleaned_tweet: str) -> VectorInt:
 
     """
 
-    pass
+    tknzr = TweetTokenizer()
+    token = tknzr.tokenize(cleaned_tweet)
+    return [i for i in token if i not in stopwords.words()]
 
 
 def replace_token_with_index(tokens: VectorInt, max_length_dictionary: int = None) -> VectorInt:
@@ -58,7 +64,7 @@ def replace_token_with_index(tokens: VectorInt, max_length_dictionary: int = Non
 
     pass
 
-def pad_sequence(indices: VectorInt, max_length: int = None) -> VectorInt:
+def pad_sequence(indices: VectorInt, max_length_tweet: int = None) -> VectorInt:
 
     """
     Args:
@@ -72,4 +78,14 @@ def pad_sequence(indices: VectorInt, max_length: int = None) -> VectorInt:
         max length
     """
 
-    pass
+    if len(indices) > max_length_tweet:
+        padded_seq = indices[:max_length_tweet]
+    else:
+        zeros = [0] * (max_length_tweet-len(indices))
+        padded_seq = indices + zeros
+    return padded_seq
+
+def one_for_all(tweet, max_length_dictionary=500, max_length_tweet=20) -> list:
+    """Do all conversion at once"""
+    return pad_sequence(replace_token_with_index(tokenize_text(
+        clean_text(tweet)), max_length_dictionary), max_length_tweet)
