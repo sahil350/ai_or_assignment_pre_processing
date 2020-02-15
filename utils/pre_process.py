@@ -27,7 +27,7 @@ class Preprocess:
         self.__token_to_index = self.token_to_index_helper()
         self.__max_length_tweet = max_length_tweet_arg
         self.tokenizer = TweetTokenizer()
-        self.cleaning_regex = r'([RT])|(@[\w]+:?)|(\w+:\/\/\S+)'       
+        self.cleaning_regex = r'([RT])|(@[\w]+:?)|(\w+:\/\/\S+)'
 
     @property
     def token_to_index(self):
