@@ -5,7 +5,6 @@ them for sentimental analysis with with CNN + Embedding model
 
 """
 import re
-import numpy as np
 import stopwords
 from constants import VectorInt, VectorString, TOKEN_TO_INDEX, MAX_LENGTH_TWEET, \
                     MAX_LENGTH_DICTIONARY

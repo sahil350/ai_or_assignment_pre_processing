@@ -63,6 +63,4 @@ class TestPreprocessModule(unittest.TestCase):
         result = self.__pre_process_2.pad_sequence(index_list)
         expected_result = [0] * 25
         self.assertEqual(result, expected_result)
-
-    def test_one_for_all(self):
-        return
+        
