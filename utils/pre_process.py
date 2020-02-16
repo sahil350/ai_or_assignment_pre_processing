@@ -75,10 +75,16 @@ class Preprocess:
         """
         helper function to initialize token_to_index dict
         """
-        token_index_array = np.loadtxt(TOKEN_TO_INDEX, max_rows= \
-            self.max_length_dictionary, dtype=str)
-        _token_index_dict = dict(enumerate(token_index_array))
-        return dict(zip(_token_index_dict.values(), _token_index_dict.keys()))
+        # replace numpy with python in-built functions
+        return_dict = dict()
+        with open(TOKEN_TO_INDEX, 'r') as file:
+            count = 0
+            for line in file:
+                return_dict[line.strip()] = count
+                count += 1
+                if count >= self.max_length_dictionary:
+                    break
+        return return_dict
 
     def clean_text(self, tweet: str) -> str:
         """
