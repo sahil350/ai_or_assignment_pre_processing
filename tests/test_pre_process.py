@@ -63,4 +63,16 @@ class TestPreprocessModule(unittest.TestCase):
         result = self.__pre_process_2.pad_sequence(index_list)
         expected_result = [0] * 25
         self.assertEqual(result, expected_result)
+
+    def test_one_for_all(self):
+        """
+        To test the one for all method in the Preprocess class
+        """
+        tweet = "RT @dullalena @taurusismagic @motshabi_P ❤❤ \
+        I'm happy you had a beautiful day! 😘 https://t.co/T6uxfX6DpC"
+
+        result = self.__pre_process.one_for_all(tweet)
+        zeros = [0] * 13
+        expected_result = [189, 189, 0, 178, 532, 126, 10] + zeros
+        self.assertEqual(result, expected_result)
         
