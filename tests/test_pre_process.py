@@ -12,7 +12,7 @@ class TestPreprocessModule(unittest.TestCase):
     """
 
     __pre_process = Preprocess()
-    __pre_process_2 = Preprocess(25, 1000) # non default arguments
+    __pre_process_2 = Preprocess(25, 500) # non default arguments
 
     def setUp(self): # run before test runs
         return # do nothing
@@ -43,10 +43,10 @@ class TestPreprocessModule(unittest.TestCase):
         """
         tokens = ['❤', '❤', "I'm", "happy", "beautiful", "day", "!"]
         result = self.__pre_process.replace_token_with_index(tokens)
-        expected_result = [189, 189, 0, 178, 0, 126, 10]
+        expected_result = [189, 189, 0, 178, 532, 126, 10]
         self.assertEqual(result, expected_result)
         result = self.__pre_process_2.replace_token_with_index(tokens)
-        expected_result = [189, 189, 0, 178, 532, 126, 10]
+        expected_result = [189, 189, 0, 178, 0, 126, 10]
         self.assertEqual(result, expected_result)
 
 
