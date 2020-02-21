@@ -113,7 +113,25 @@ class Preprocess:
         """
         token = self.tokenizer.tokenize(cleaned_tweet)
         return [i for i in token if i not in stopwords.words()]
+    
+    def load_embedding_dictionary(self,file_path):
+        self.embedding_dictionary = {}
+        embeddings = []
+        if ".zip/" in file_path:
+            archive_path = os.path.abspath(file_path)
+            split = archive_path.split(".zip/")
+            archive_path = split[0] + ".zip"
+            path_inside = split[1]
+            archive = zipfile.ZipFile(archive_path, "r")
+            embeddings = archive.read(path_inside).decode("utf8").split("\n")
+        else:
+            embeddings = open(file_path, "r", encoding="utf8").read().split("\n")
 
+        for index, row in enumerate(embeddings):
+            split = row.split(" ")
+            if index == self.max_dictionary_size:
+                return
+            self.embedding_dictionary[split[0]]=index
 
     def replace_token_with_index(self, tokens: VectorString) -> VectorInt:
 
