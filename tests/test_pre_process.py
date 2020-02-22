@@ -12,7 +12,7 @@ class TestPreprocessModule(unittest.TestCase):
     """
 
     __pre_process = Preprocess()
-    __pre_process_2 = Preprocess(25, 500) # non default arguments
+    __pre_process_2 = Preprocess(max_length_tweet_arg=25, max_length_dictionary_arg=500) # non default arguments
 
     def setUp(self): # run before test runs
         return # do nothing
@@ -43,10 +43,10 @@ class TestPreprocessModule(unittest.TestCase):
         """
         tokens = ['❤', '❤', "I'm", "happy", "beautiful", "day", "!"]
         result = self.__pre_process.replace_token_with_index(tokens)
-        expected_result = [189, 189, 0, 178, 532, 126, 10]
+        expected_result = [191, 191, 0, 180, 534, 128, 12]
         self.assertEqual(result, expected_result)
         result = self.__pre_process_2.replace_token_with_index(tokens)
-        expected_result = [189, 189, 0, 178, 0, 126, 10]
+        expected_result = [191, 191, 0, 180, 0, 128, 12]
         self.assertEqual(result, expected_result)
 
 
@@ -73,6 +73,6 @@ class TestPreprocessModule(unittest.TestCase):
 
         result = self.__pre_process.one_for_all(tweet)
         zeros = [0] * 13
-        expected_result = [189, 189, 0, 178, 532, 126, 10] + zeros
+        expected_result = [191, 191, 0, 180, 534, 128, 12] + zeros
         self.assertEqual(result, expected_result)
         

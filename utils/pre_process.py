@@ -5,10 +5,13 @@ them for sentimental analysis with with CNN + Embedding model
 
 """
 import re
+import os
+import zipfile
 import stopwords
 from constants import VectorInt, VectorString, TOKEN_TO_INDEX, MAX_LENGTH_TWEET, \
                     MAX_LENGTH_DICTIONARY
 from nltk_tokenize import TweetTokenizer
+
 
 class Preprocess:
     """
@@ -17,12 +20,14 @@ class Preprocess:
     :param max_length_dictionary: defaults to MAX_LENGTH_DICTIONARY defined in constants
     """
 
-    def __init__(self, max_length_tweet_arg=MAX_LENGTH_TWEET,
+    def __init__(self, path_to_dictionary_arg=TOKEN_TO_INDEX,
+                 max_length_tweet_arg=MAX_LENGTH_TWEET,
                  max_length_dictionary_arg=MAX_LENGTH_DICTIONARY):
         """
         Intializes a Preprocess object
         """
         self.__max_length_dictionary = max_length_dictionary_arg
+        self.__path_to_dictionary = path_to_dictionary_arg
         self.__token_to_index = self.token_to_index_helper()
         self.__max_length_tweet = max_length_tweet_arg
         self.tokenizer = TweetTokenizer()
@@ -41,6 +46,20 @@ class Preprocess:
         setter method for token_to_index
         """
         self.__token_to_index = token_dictionary
+
+    @property
+    def path_to_dictionary(self):
+        """
+        getter method for token_to_index
+        """
+        return self.__path_to_dictionary
+
+    @path_to_dictionary.setter
+    def path_to_dictionary(self, path_to_dictionary_arg):
+        """
+        setter method for token_to_index
+        """
+        self.__path_to_dictionary = path_to_dictionary_arg
 
     @property
     def max_length_tweet(self):
@@ -75,15 +94,34 @@ class Preprocess:
         helper function to initialize token_to_index dict
         """
         # replace numpy with python in-built functions
+        # return_dict = dict()
+        # with open(self.path_to_dictionary, 'r') as file:
+        #     count = 0
+        #     for line in file:
+        #         return_dict[line.strip()] = count
+        #         count += 1
+        #         if count >= self.max_length_dictionary:
+        #             break
+        # return return_dict
         return_dict = dict()
-        with open(TOKEN_TO_INDEX, 'r') as file:
-            count = 0
-            for line in file:
-                return_dict[line.strip()] = count
-                count += 1
-                if count >= self.max_length_dictionary:
-                    break
+        embeddings = []
+        if ".zip/" in self.path_to_dictionary:
+            archive_path = os.path.abspath(self.path_to_dictionary)
+            split = archive_path.split(".zip/")
+            archive_path = split[0] + ".zip"
+            path_inside = split[1]
+            archive = zipfile.ZipFile(archive_path, "r")
+            embeddings = archive.read(path_inside).decode("utf8").split("\n")
+        else:
+            embeddings = open(self.path_to_dictionary, "r", encoding="utf8").read().split("\n")
+
+        for index, row in enumerate(embeddings):
+            split = row.split(" ")
+            if index == self.max_length_dictionary:
+                break
+            return_dict[split[0]] = index
         return return_dict
+
 
     def clean_text(self, tweet: str) -> str:
         """
@@ -113,25 +151,26 @@ class Preprocess:
         """
         token = self.tokenizer.tokenize(cleaned_tweet)
         return [i for i in token if i not in stopwords.words()]
-    
-    def load_embedding_dictionary(self,file_path):
-        self.embedding_dictionary = {}
-        embeddings = []
-        if ".zip/" in file_path:
-            archive_path = os.path.abspath(file_path)
-            split = archive_path.split(".zip/")
-            archive_path = split[0] + ".zip"
-            path_inside = split[1]
-            archive = zipfile.ZipFile(archive_path, "r")
-            embeddings = archive.read(path_inside).decode("utf8").split("\n")
-        else:
-            embeddings = open(file_path, "r", encoding="utf8").read().split("\n")
 
-        for index, row in enumerate(embeddings):
-            split = row.split(" ")
-            if index == self.max_dictionary_size:
-                return
-            self.embedding_dictionary[split[0]]=index
+
+    # def load_embedding_dictionary(self,file_path):
+    #     self.embedding_dictionary = {}
+    #     embeddings = []
+    #     if ".zip/" in file_path:
+    #         archive_path = os.path.abspath(file_path)
+    #         split = archive_path.split(".zip/")
+    #         archive_path = split[0] + ".zip"
+    #         path_inside = split[1]
+    #         archive = zipfile.ZipFile(archive_path, "r")
+    #         embeddings = archive.read(path_inside).decode("utf8").split("\n")
+    #     else:
+    #         embeddings = open(file_path, "r", encoding="utf8").read().split("\n")
+
+    #     for index, row in enumerate(embeddings):
+    #         split = row.split(" ")
+    #         if index == self.max_length_dictionary:
+    #             return
+    #         self.embedding_dictionary[split[0]] = index
 
     def replace_token_with_index(self, tokens: VectorString) -> VectorInt:
 
